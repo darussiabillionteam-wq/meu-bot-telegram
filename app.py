@@ -41,11 +41,15 @@ Qual você quer?""")
 
 @bot.message_handler(func=lambda m: 'quero o curso' in m.text.lower())
 def curso(message):
-    bot.reply_to(message, "🔥 Curso Black VIP - R$47\nMe chama no privado: @digitalpay_ravi_bot")
+    bot.reply_to(message, "🔥 Curso Black VIP - R$47\nMe chama no privado: @MetodosBlackBot")
 
 @bot.message_handler(func=lambda m: 'quero o pack' in m.text.lower())
 def pack(message):
-    bot.reply_to(message, "📦 Pack Exclusivo - R$19,90\nMe chama no privado: @digitalpay_ravi_bot")
+    bot.reply_to(message, "📦 Pack Exclusivo - R$19,90\nMe chama no privado: @MetodosBlackBot")
+
+@bot.message_handler(func=lambda m: 'combo' in m.text.lower() or 'quero os dois' in m.text.lower())
+def combo(message):
+    bot.reply_to(message, "🚀 Combo Completo - R$59,90\nMe chama no privado: @MetodosBlackBot")
 
 # Remove webhook antigo e seta o novo
 if __name__ == "__main__":
