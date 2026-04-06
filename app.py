@@ -6,9 +6,21 @@ TOKEN = "8776199110:AAHdH5Iw46ipMYpApA3Hz5RW4yfourne3as"
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
-# Webhook endpoint
-@app.route('/webhook', methods=['POST'])
+# Health check para o Render
+@app.route('/', methods=['GET'])
+def home():
+    return "Bot is running!", 200
+
+# Health check específico para o UptimeRobot
+@app.route('/health', methods=['GET'])
+def health():
+    return "OK", 200
+
+# Webhook endpoint (aceita GET e POST)
+@app.route('/webhook', methods=['GET', 'POST'])
 def webhook():
+    if request.method == 'GET':
+        return "Webhook endpoint. Use POST for updates.", 200
     update = telebot.types.Update.de_json(request.stream.read().decode('utf-8'))
     bot.process_new_updates([update])
     return 'OK', 200
@@ -36,9 +48,9 @@ def pack(message):
     bot.reply_to(message, "📦 Pack Exclusivo - R$19,90\nMe chama no privado: @digitalpay_ravi_bot")
 
 # Remove webhook antigo e seta o novo
-bot.remove_webhook()
-bot.set_webhook(url="https://meu-bot-telegram-ip1g.onrender.com/webhook")
-
 if __name__ == "__main__":
+    bot.remove_webhook()
+    bot.set_webhook(url="https://meu-bot-telegram-ip1g.onrender.com/webhook")
+    print("✅ Webhook configurado com sucesso!")
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
