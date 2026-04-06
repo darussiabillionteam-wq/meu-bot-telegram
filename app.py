@@ -1,13 +1,19 @@
 import os
-import threading
 import telebot
-from flask import Flask
+from flask import Flask, request
 
-# ========== CONFIGURAÇÕES ==========
 TOKEN = "8776199110:AAHdH5Iw46ipMYpApA3Hz5RW4yfourne3as"
 bot = telebot.TeleBot(TOKEN)
+app = Flask(__name__)
 
-# ========== COMANDOS DO BOT ==========
+# Webhook endpoint
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    update = telebot.types.Update.de_json(request.stream.read().decode('utf-8'))
+    bot.process_new_updates([update])
+    return 'OK', 200
+
+# Comandos
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.reply_to(message, "Fala, arrombado! 👊\nManda 'menu' pra ver o catálogo.")
@@ -29,27 +35,10 @@ def curso(message):
 def pack(message):
     bot.reply_to(message, "📦 Pack Exclusivo - R$19,90\nMe chama no privado: @digitalpay_ravi_bot")
 
-# ========== SERVIDOR WEB FALSO (PRO RENDER) ==========
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Bot is running!"
-
-@app.route('/health')
-def health():
-    return "OK", 200
-
-def run_bot():
-    """Roda o bot em thread separada"""
-    print("✅ BOT RODANDO...")
-    bot.infinity_polling()
+# Remove webhook antigo e seta o novo
+bot.remove_webhook()
+bot.set_webhook(url="https://meu-bot-telegram-ip1g.onrender.com/webhook")
 
 if __name__ == "__main__":
-    # Inicia o bot em background
-    thread = threading.Thread(target=run_bot)
-    thread.start()
-    
-    # Roda o servidor web (necessário pro Render)
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
